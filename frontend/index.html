@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyLens – AI Reading & Study Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body class="dark fs-md">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo" onclick="showView('upload')">
+    <div class="logo-gem">🔍</div>
+    Study<span>Lens</span>
+  </div>
+  <div class="topbar-center" id="topbar-filename"></div>
+  <div class="topbar-actions">
+    <div class="font-controls">
+      <button class="font-btn" onclick="setFont(-1)" title="Decrease font size">A−</button>
+      <button class="font-btn" onclick="setFont(1)" title="Increase font size">A+</button>
+    </div>
+    <button class="top-btn" id="exportBtn" onclick="exportResults('txt')" style="display:none">⬇ Export</button>
+    <button class="top-btn accent" onclick="showView('upload')">+ New Upload</button>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" id="themeBtn">☀️</button>
+    <button class="hamburger-btn" onclick="toggleSidebar()" id="hambBtn" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Navigation</div>
+      <button class="nav-btn active" id="nav-upload" onclick="showView('upload')">
+        <span class="nb-icon">📂</span> Upload Document
+      </button>
+      <button class="nav-btn" id="nav-results" onclick="showView('results')" disabled>
+        <span class="nb-icon">📋</span> Study Results
+        <span class="nav-count" id="nb-qcount">—</span>
+      </button>
+      <button class="nav-btn" id="nav-diagrams" onclick="showView('diagrams')" disabled>
+        <span class="nb-icon">🗺</span> Diagrams
+        <span class="nav-count" id="nb-dcount">—</span>
+      </button>
+      <button class="nav-btn" id="nav-summary" onclick="showView('summary')" disabled>
+        <span class="nb-icon">📊</span> Summary
+      </button>
+    </div>
+
+    <div class="sidebar-section grow">
+      <div class="sidebar-label">Topics</div>
+      <div class="topic-tree" id="topicTree">
+        <div class="tree-empty">Upload a document to see topics here.</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Filter by Confidence</div>
+      <button class="nav-btn filter-nav" data-filter="all" onclick="setFilter(this)">
+        <span class="nb-icon">🔘</span> All Topics
+      </button>
+      <button class="nav-btn filter-nav" data-filter="high" onclick="setFilter(this)">
+        <span class="nb-icon conf-high">●</span> High ≥85%
+      </button>
+      <button class="nav-btn filter-nav" data-filter="mid" onclick="setFilter(this)">
+        <span class="nb-icon conf-mid">●</span> Mid 60–84%
+      </button>
+      <button class="nav-btn filter-nav" data-filter="low" onclick="setFilter(this)">
+        <span class="nb-icon conf-low">●</span> Low &lt;60%
+      </button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="api-health" id="apiHealth">
+        <span class="health-dot" id="healthDot"></span>
+        <span id="healthText">Checking API…</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-panel">
+
+    <!-- ═══ UPLOAD VIEW ═══ -->
+    <div class="view active" id="view-upload">
+      <div class="upload-hero">
+        <div class="upload-eyebrow">AI-Powered Study Assistant</div>
+        <h1 class="upload-title">Turn Any Document Into<br><span class="accent-text">Your Study Guide</span></h1>
+        <p class="upload-sub">Upload a PDF, PowerPoint, Word doc, or plain text. StudyLens extracts every topic, generates study questions with example answers, and clarifies all diagrams — in seconds.</p>
+
+        <div class="drop-zone" id="dropZone">
+          <input type="file" id="fileInput" accept=".pdf,.ppt,.pptx,.doc,.docx,.txt,.md,.epub" onchange="handleFileSelect(event)">
+          <div class="drop-inner" id="dropInner">
+            <div class="drop-icon">📄</div>
+            <div class="drop-text">Drop your file here</div>
+            <div class="drop-sub-text">or <span class="link" onclick="document.getElementById('fileInput').click()">click to browse</span></div>
+            <div class="drop-formats">
+              <span class="fmt">PDF</span><span class="fmt">PPT/PPTX</span><span class="fmt">DOC/DOCX</span><span class="fmt">TXT</span><span class="fmt">EPUB</span><span class="fmt">Markdown</span>
+            </div>
+            <div class="drop-limit">Max 50 MB · All file contents processed locally</div>
+          </div>
+        </div>
+
+        <div class="upload-actions">
+          <button class="btn-primary" onclick="runDemo()">🚀 Try Demo Document</button>
+        </div>
+
+        <div class="feature-strip">
+          <div class="feat-tile"><div class="feat-icon">🧠</div><div class="feat-name">Topic Extraction</div><div class="feat-desc">Identifies every major concept with confidence scoring</div></div>
+          <div class="feat-tile"><div class="feat-icon">❓</div><div class="feat-name">Study Questions</div><div class="feat-desc">Auto-generates Q&A pairs tagged by topic and page</div></div>
+          <div class="feat-tile"><div class="feat-icon">🗺</div><div class="feat-name">Diagram Clarifier</div><div class="feat-desc">Detects diagrams and adds labeled callout explanations</div></div>
+          <div class="feat-tile"><div class="feat-icon">🌐</div><div class="feat-name">Multilingual</div><div class="feat-desc">Auto-detects language; supports 20+ languages</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PROCESSING VIEW ═══ -->
+    <div class="view" id="view-processing">
+      <div class="processing-wrap">
+        <div class="proc-filename" id="proc-filename">Analysing document…</div>
+        <h2 class="proc-title">Processing Your Document</h2>
+        <p class="proc-sub">Please wait while StudyLens extracts topics, generates questions, and detects diagrams.</p>
+        <div class="proc-steps" id="procSteps"></div>
+        <div class="proc-bar-wrap">
+          <div class="proc-bar"><div class="proc-fill" id="procFill" style="width:0%"></div></div>
+          <div class="proc-pct" id="procPct">0%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ RESULTS VIEW ═══ -->
+    <div class="view" id="view-results">
+      <div class="results-header">
+        <div>
+          <h2 class="results-title">Study Results</h2>
+          <div class="results-meta" id="resultsMeta">—</div>
+        </div>
+        <div class="filter-bar" id="filterBar">
+          <button class="filter-btn active" data-f="all" onclick="filterQuestions(this,'all')">All</button>
+          <button class="filter-btn" data-f="high" onclick="filterQuestions(this,'high')">High Confidence</button>
+          <button class="filter-btn" data-f="concept" onclick="filterQuestions(this,'concept')">Concepts</button>
+          <button class="filter-btn" data-f="algo" onclick="filterQuestions(this,'algo')">Algorithms</button>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        <span class="disclaimer-icon">⚠️</span>
+        Confidence scores reflect extraction reliability (High ≥85%, Mid 60–84%, Low &lt;60%). Example answers are AI-generated study prompts — always cross-reference your source document.
+      </div>
+
+      <div class="export-bar">
+        <div class="export-label" id="exportLabel">Loading results…</div>
+        <div class="export-btns">
+          <button class="exp-btn" onclick="copyAllQuestions()">📋 Copy All</button>
+          <button class="exp-btn" onclick="exportResults('txt')">📥 Export TXT</button>
+          <button class="exp-btn" onclick="exportResults('json')">📦 Export JSON</button>
+        </div>
+      </div>
+
+      <div class="result-tabs">
+        <button class="tab-btn active" onclick="switchTab(this,'tab-questions')">❓ Questions <span class="tab-count" id="tc-q">0</span></button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-topics')">🏷 Topics <span class="tab-count" id="tc-t">0</span></button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-map')">📍 Source Map</button>
+      </div>
+
+      <div class="tab-panel active" id="tab-questions"><div id="questionsContainer"></div></div>
+      <div class="tab-panel" id="tab-topics"><div id="topicsContainer"></div></div>
+      <div class="tab-panel" id="tab-map"><div id="sourceMapContainer"></div></div>
+    </div>
+
+    <!-- ═══ DIAGRAMS VIEW ═══ -->
+    <div class="view" id="view-diagrams">
+      <div class="results-header">
+        <div>
+          <h2 class="results-title">Diagram Hallmarks</h2>
+          <div class="results-meta" id="diagMeta">—</div>
+        </div>
+      </div>
+      <div class="disclaimer">
+        <span class="disclaimer-icon">🗺</span>
+        Diagrams are re-rendered with labeled callouts from the extracted document. Complex or scanned diagrams may have reduced accuracy.
+      </div>
+      <div id="diagramsContainer"></div>
+    </div>
+
+    <!-- ═══ SUMMARY VIEW ═══ -->
+    <div class="view" id="view-summary">
+      <h2 class="results-title" style="margin-bottom:24px">📊 Document Summary</h2>
+      <div class="summary-grid" id="summaryStats"></div>
+      <div class="section-hd">🗂 Topic Outline</div>
+      <div id="outlineContainer" style="margin-bottom:24px"></div>
+      <div class="section-hd">📈 Confidence Distribution</div>
+      <div class="card" style="margin-bottom:24px"><div id="confChart"></div></div>
+      <div class="section-hd">⚙️ Processing Details</div>
+      <div class="card"><div class="proc-details-grid" id="procDetails"></div></div>
+    </div>
+
+    <!-- ═══ ERROR VIEW ═══ -->
+    <div class="view" id="view-error">
+      <div class="error-wrap">
+        <div class="error-icon">⚠️</div>
+        <h2>Something went wrong</h2>
+        <p id="errorMsg">An error occurred during processing.</p>
+        <button class="btn-primary" onclick="showView('upload')">← Try Again</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
