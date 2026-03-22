@@ -9,53 +9,9 @@
 </head>
 <body class="dark fs-md">
 
-<!-- AUTH MODAL -->
-<div class="auth-modal" id="authModal">
-  <div class="auth-box">
-    <div class="auth-header">
-      <h2 class="auth-title">Welcome to StudyLens</h2>
-      <p class="auth-subtitle">Your AI-powered study companion</p>
-    </div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchAuthTab('signin')">Sign In</button>
-      <button class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
-    </div>
-    <div class="auth-error" id="authError"></div>
-    <form class="auth-form active" id="signinForm" onsubmit="handleSignIn(event)">
-      <div class="auth-input-group">
-        <label class="auth-label">Email</label>
-        <input type="email" class="auth-input" name="email" required autocomplete="email">
-      </div>
-      <div class="auth-input-group">
-        <label class="auth-label">Password</label>
-        <input type="password" class="auth-input" name="password" required autocomplete="current-password">
-      </div>
-      <button type="submit" class="auth-btn" id="signinBtn">Sign In</button>
-    </form>
-    <form class="auth-form" id="signupForm" onsubmit="handleSignUp(event)">
-      <div class="auth-input-group">
-        <label class="auth-label">Full Name</label>
-        <input type="text" class="auth-input" name="fullname" required autocomplete="name">
-      </div>
-      <div class="auth-input-group">
-        <label class="auth-label">Email</label>
-        <input type="email" class="auth-input" name="email" required autocomplete="email">
-      </div>
-      <div class="auth-input-group">
-        <label class="auth-label">Password</label>
-        <input type="password" class="auth-input" name="password" required autocomplete="new-password" minlength="6">
-      </div>
-      <button type="submit" class="auth-btn" id="signupBtn">Create Account</button>
-    </form>
-    <div class="auth-footer">
-      <a href="#" class="auth-link" onclick="closeAuthModal();showView('upload');return false">Continue as guest</a>
-    </div>
-  </div>
-</div>
-
 <!-- TOPBAR -->
 <header class="topbar">
-  <div class="logo" onclick="showView('dashboard')">
+  <div class="logo" onclick="showView('upload')">
     <div class="logo-gem">🔍</div>
     Study<span>Lens</span>
   </div>
@@ -68,18 +24,6 @@
     <button class="top-btn" id="exportBtn" onclick="exportResults('txt')" style="display:none">⬇ Export</button>
     <button class="top-btn accent" onclick="showView('upload')">+ New Upload</button>
     <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" id="themeBtn">☀️</button>
-    <div class="user-menu" id="userMenu" style="display:none">
-      <div class="user-avatar" onclick="toggleUserMenu()" id="userAvatar"></div>
-      <div class="user-dropdown" id="userDropdown">
-        <div class="user-dropdown-header">
-          <div class="user-dropdown-email" id="userEmail"></div>
-          <div class="user-dropdown-tier" id="userTier">Free Plan</div>
-        </div>
-        <button class="user-dropdown-item" onclick="showView('dashboard')">📊 Dashboard</button>
-        <button class="user-dropdown-item" onclick="showView('upload')">📂 Upload</button>
-        <button class="user-dropdown-item" onclick="handleSignOut()">🚪 Sign Out</button>
-      </div>
-    </div>
     <button class="hamburger-btn" onclick="toggleSidebar()" id="hambBtn" aria-label="Menu">☰</button>
   </div>
 </header>
@@ -90,9 +34,6 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-label">Navigation</div>
-      <button class="nav-btn" id="nav-dashboard" onclick="showView('dashboard')">
-        <span class="nb-icon">📊</span> Dashboard
-      </button>
       <button class="nav-btn active" id="nav-upload" onclick="showView('upload')">
         <span class="nb-icon">📂</span> Upload Document
       </button>
@@ -141,26 +82,6 @@
   </aside>
 
   <!-- MAIN -->
-  <main class="main-panel">
-
-    <!-- DASHBOARD VIEW -->
-    <div class="view" id="view-dashboard">
-      <h2 class="results-title" style="margin-bottom:24px">📊 Your Study Dashboard</h2>
-      <div class="dashboard-grid" id="dashboardStats">
-        <div class="shimmer" style="height:120px;border-radius:14px"></div>
-        <div class="shimmer" style="height:120px;border-radius:14px"></div>
-        <div class="shimmer" style="height:120px;border-radius:14px"></div>
-      </div>
-      <h3 class="section-hd" style="margin-top:32px">Recent Documents</h3>
-      <div class="document-grid" id="documentGrid">
-        <div class="empty-state">
-          <div class="empty-icon">📂</div>
-          <h3 class="empty-title">No documents yet</h3>
-          <p class="empty-text">Upload your first document to start studying smarter</p>
-          <button class="btn-primary" onclick="showView('upload')">Upload Document</button>
-        </div>
-      </div>
-    </div>
   <main class="main-panel">
 
     <!-- ═══ UPLOAD VIEW ═══ -->
@@ -292,7 +213,6 @@
 
 <div class="toast" id="toast"></div>
 
-<script type="module" src="/static/js/app-init.js"></script>
 <script src="/static/js/app.js"></script>
 </body>
 </html>

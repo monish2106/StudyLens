@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - StudyLens</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body class="dark fs-md">
+
+<header class="topbar">
+  <div class="logo">
+    <div class="logo-gem">🔍</div>
+    Study<span>Lens</span>
+  </div>
+  <div class="topbar-center">Dashboard</div>
+  <div class="topbar-actions">
+    <button class="top-btn accent" onclick="window.location.href='/'">+ New Upload</button>
+    <button class="theme-toggle" onclick="toggleTheme()">☀️</button>
+  </div>
+</header>
+
+<div class="app-shell">
+  <main class="main-panel">
+    <div class="view active" id="view-dashboard">
+      <h2 class="results-title" style="margin-bottom:24px">Your Study Dashboard</h2>
+      <div class="dashboard-grid" id="dashboardStats">
+        <div class="shimmer" style="height:120px;border-radius:14px"></div>
+        <div class="shimmer" style="height:120px;border-radius:14px"></div>
+        <div class="shimmer" style="height:120px;border-radius:14px"></div>
+      </div>
+      <h3 class="section-hd">Recent Documents</h3>
+      <div class="document-grid" id="documentGrid">
+        <div class="shimmer" style="height:150px;border-radius:14px"></div>
+        <div class="shimmer" style="height:150px;border-radius:14px"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { supabase } from './static/js/supabase.js';
+import { loadDashboard } from './static/js/dashboard.js';
+
+async function init() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    window.location.href = '/';
+    return;
+  }
+  await loadDashboard();
+}
+
+window.toggleTheme = function() {
+  document.body.classList.toggle('dark');
+  document.body.classList.toggle('light');
+};
+
+init();
+</script>
+
+</body>
+</html>
